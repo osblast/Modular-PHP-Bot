@@ -1,0 +1,20 @@
+<?php
+
+
+	$chanlist = $bot->ChanList;
+	$mem_instance_arr = $chanlist->queryUserByNickname($old_nickname);
+
+	if($mem_instance_arr == null)
+		return; /* nothing to do here, a user changed nicknames, but we aren't keeping track of that user for some reason */
+
+	for($tzIter=0; $tzIter<count($mem_instance_arr); $tzIter++)
+	{
+		$chan_member = $mem_instance_arr[$tzIter];
+
+		if(strtoupper($chan_member->Nickname) == strtoupper($old_nickname))
+			$chan_member->Nickname = $new_nickname;
+	}
+
+	$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "User $old_nickname changed their nickname to $new_nickname, updated my records!"));
+
+?>
