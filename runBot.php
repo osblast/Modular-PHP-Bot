@@ -30,10 +30,11 @@
 			echo('Running PHPBot in the foreground of this session only..');
 		}
 
-		$ircServer = new IRCServer("irc.tl", 6667);
-		$ircBotConfig = new botConfig("PHPBot", "Modular PHP Bot", $ircServer);
-		$ircBotConfig->DebugChannel = "#rwxxr";
+		$ircServer = new IRCServer("irc.freenode.net", 6667);
+		$ircBotConfig = new botConfig("PHPBot_", "Modular PHP Bot", $ircServer);
+		$ircBotConfig->DebugChannel = "#osBlast";
 		$ircBot = new PHPBot($ircBotConfig);
+
 		$ircBot->Run();
 	}
 
