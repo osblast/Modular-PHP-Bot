@@ -4,7 +4,7 @@
 
 	if(count($iuk_data) < 5)
 	{
-		$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "Please specify the channel name, Usage: ISUSERKNOWN <nickname>"));
+		$bot->socketHandler->send($bot->ircHandler->PRIVMSG($bot->botConfig->DebugChannel, "Please specify the channel name, Usage: ISUSERKNOWN <nickname>"));
 	}
 
 	$given_nickname = $iuk_data[4];
@@ -13,7 +13,7 @@
 
 	if($mem_instance_arr == null)
 	{
-		$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "Sorry, the nickname $given_nickname is not known to me!"));
+		$bot->socketHandler->send($bot->ircHandler->PRIVMSG($bot->botConfig->DebugChannel, "Sorry, the nickname $given_nickname is not known to me!"));
 	}
 	else
 	{
@@ -42,12 +42,12 @@
 
 		if(strtoupper($given_nickname) == strtoupper($bot->botConfig->NICKNAME))
 		{
-			$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "Yes of course I know $given_nickname..! Thats ME! I'm currently in ".count($mem_instance_arr)." channels: $onchanlist"));
+			$bot->socketHandler->send($bot->ircHandler->PRIVMSG($bot->botConfig->DebugChannel, "Yes of course I know $given_nickname..! Thats ME! I'm currently in ".count($mem_instance_arr)." channels: $onchanlist"));
 		}
 		else
 		{
 
-			$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "$given_nickname is known to me, in ".count($mem_instance_arr)." channels: $onchanlist"));
+			$bot->socketHandler->send($bot->ircHandler->PRIVMSG($bot->botConfig->DebugChannel, "$given_nickname is known to me, in ".count($mem_instance_arr)." channels: $onchanlist"));
 		}
 	}
 

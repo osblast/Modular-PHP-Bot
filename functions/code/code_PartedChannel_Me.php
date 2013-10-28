@@ -10,11 +10,11 @@
 
 	if($channelobj == null)
 	{
-		$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "I parted $channel, but my internal register said I wasn't on it.  That's wierd!"));
+		$bot->socketHandler->send($bot->ircHandler->PRIVMSG($bot->botConfig->DebugChannel, "I parted $channel, but my internal register said I wasn't on it.  That's wierd!"));
 	}
 	else
 	{
-		$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "I parted $channel!"));
+		$bot->socketHandler->send($bot->ircHandler->PRIVMSG($bot->botConfig->DebugChannel, "I parted $channel!"));
 	}
 
 

@@ -20,6 +20,6 @@
 		}
 	}
 
-	$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "User $quit_nickname QUIT IRC because: $quit_reason, updated my records!"));
+	$bot->socketHandler->send($bot->ircHandler->PRIVMSG($bot->botConfig->DebugChannel, "User $quit_nickname QUIT IRC because: $quit_reason, updated my records!"));
 
 ?>

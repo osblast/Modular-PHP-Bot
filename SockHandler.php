@@ -23,6 +23,8 @@
 
 		function send($data)
 		{
+			echo("<- ".$data."\r\n");
+
 			if(is_resource($this->socket))
 			{
 				fwrite($this->socket, $data. "\r\n");

@@ -17,6 +17,6 @@
 
 	$bot->ChanList->RemoveChannel($channelObj);
 
-	$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "User $kicker kicked ME from $channel for: $kick_reason! [bastard!]"));
+	$bot->socketHandler->send($bot->ircHandler->PRIVMSG($bot->botConfig->DebugChannel, "User $kicker kicked ME from $channel for: $kick_reason! [bastard!]"));
 
 ?>

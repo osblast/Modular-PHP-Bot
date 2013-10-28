@@ -55,6 +55,11 @@
 			return("PING :$server");
 		}
 
+		function PONG($server)
+		{
+			return("PONG :$server");
+		}
+
 	}
 
 ?>

@@ -14,6 +14,11 @@
 			return($this->config[$configKey]);
 		}
 
+		public function __set($configKey, $configValue)
+		{
+			$this->config[$configKey] = $configValue;
+		}
+
 	}
 
 	class IRCServer {

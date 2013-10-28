@@ -13,6 +13,6 @@
 
 	$channelObj->MemberList->RemoveMember($kicked_chan_member); //  remove user from channel db
 
-	$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "User $kicker kicked $kicked from $channel for: $kick_reason!"));
+	$bot->socketHandler->send($bot->ircHandler->PRIVMSG($bot->botConfig->DebugChannel, "User $kicker kicked $kicked from $channel for: $kick_reason!"));
 
 ?>

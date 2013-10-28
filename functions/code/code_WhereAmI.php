@@ -17,5 +17,5 @@ for($tzIter=0; $tzIter<$chanlist->Count(); $tzIter++)
 
 }
 
-$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "I am currently on the following channels: ".$on_channels));
+$bot->socketHandler->send($bot->ircHandler->PRIVMSG($bot->botConfig->DebugChannel, "I am currently on the following channels: ".$on_channels));
 ?>

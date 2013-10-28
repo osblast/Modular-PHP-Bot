@@ -16,6 +16,6 @@
 
 	$this->botConfig->NICKNAME = $new_nickname;
 
-	$bot->socketHandler->send($bot->ircHandler->PRIVMSG("#phpbottest", "My nickname ($old_nickname) was changed to $new_nickname, updated my records!"));
+	$bot->socketHandler->send($bot->ircHandler->PRIVMSG($bot->botConfig->DebugChannel, "My nickname ($old_nickname) was changed to $new_nickname, updated my records!"));
 
 ?>

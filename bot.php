@@ -9,6 +9,11 @@ include_once("Channel.php");
 
 //set_error_handler("BotError");
 
+define("PHP_BOT_VERSION_MAJOR", "2");
+define("PHP_BOT_VERSION_MINOR","0");
+define("PHP_BOT_VERSION_REVISION","0");
+define("PHP_BOT_VERSION_BUILD", "29122013");
+
 function BotError()
 {
 	return(true);
@@ -49,7 +54,6 @@ class PHPBot {
 
 		$this->socketHandler->send($this->ircHandler->NICK($this->botConfig->NICKNAME));
 		$this->socketHandler->send($this->ircHandler->USER($this->botConfig->NICKNAME, $this->botConfig->SERVERS[0]->Hostname, $this->botConfig->NICKNAME, $this->botConfig->GECOS));
-		$this->socketHandler->send($this->ircHandler->JOIN("#phpbottest"));
 
 		while(true)
 		{
@@ -76,13 +80,15 @@ class PHPBot {
 		$data_process = array_filter(explode(" ", $data));
 
 		//PING first
+		echo("-> $data\r\n");
+
 		switch(strtoupper($data_process[0]))
 		{
 
 			case "PING":
-
-				$this->socketHandler->send($this->ircHandler->PING(substr($data_process[1], 0, (strlen($data_process[1]-1)))));
-				echo("Server [".substr($data_process[1], 0, (strlen($data_process[1]-1)."] -> PING?  PONG!  \r\n")));
+				$ping_from = substr($data_process[1], 1, strlen($data_process[1])-1);
+				echo("Received a PING from $ping_from\r\n");
+				$this->socketHandler->send($this->ircHandler->PONG($ping_from));
 				break;
 		}
 
@@ -112,12 +118,21 @@ class PHPBot {
 
 	   */
 
-		$from_p1 = explode("!", $data_process[0]);
-		$from_p2 = explode("@", $from_p1[1]);
+		$from_p1 = array(); $from_p2 = array(); $from_nick = null; $from_userid = null; $from_host = null;
 
-		$from_nick = substr($from_p1[0], 1, strlen($from_p1[0]));
-		$from_userid = $from_p2[0];
-		$from_host = $from_p2[1];
+		if(isset($data_process[0]))
+			$from_p1 = explode("!", $data_process[0]);
+
+		if(isset($from_p1[1]))
+			$from_p2 = explode("@", $from_p1[1]);
+
+
+		if(count($from_p1) > 0 && count($from_p2) > 0)
+		{
+			$from_nick = substr($from_p1[0], 1, strlen($from_p1[0]));
+			$from_userid = $from_p2[0];
+			$from_host = $from_p2[1];
+		}
 
 		switch(strtoupper($data_process[1]))
 		{
@@ -191,6 +206,14 @@ class PHPBot {
 					break;
 
 
+				//:foco.lu.irc.tl 376 PHPBot :End of /MOTD command.
+				case "376":
+
+					// this signifies END OF MOTD, and Connected to IRC.
+					// here we call ProcessBotConnected();
+					$this->ProcessBotConnected();
+					break;
+
 
 				case "332":
 			// 			channel topic on join
@@ -262,23 +285,32 @@ class PHPBot {
 	{
 		if($this->functionHandler != null)
 		{
-			$this->socketHandler->send($this->ircHandler->PRIVMSG("#phpbottest", "$from_nick called RELOAD .., Reloading functions .."));
+			$this->socketHandler->send($this->ircHandler->PRIVMSG($this->botConfig->DebugChannel, "$from_nick called RELOAD .., Reloading functions .."));
 			$arrFunctionList = $this->functionHandler->Reload();
 
 			$functionsLoaded = implode(", ", $arrFunctionList);
 
-			$this->socketHandler->send($this->ircHandler->PRIVMSG("#phpbottest", "successfully reloaded ".count($arrFunctionList)." functions: [$functionsLoaded]"));
+			$this->socketHandler->send($this->ircHandler->PRIVMSG($this->botConfig->DebugChannel, "successfully reloaded ".count($arrFunctionList)." functions: [$functionsLoaded]"));
 
 		}
 		else
 		{
-			$this->socketHandler->send($this->ircHandler->PRIVMSG("#phpbottest", "$from_nick tried to RELOAD, however the functionhandler doesn't exist."));
+			$this->socketHandler->send($this->ircHandler->PRIVMSG($this->botConfig->DebugChannel, "$from_nick tried to RELOAD, however the functionhandler doesn't exist."));
 			return;
 		}
 	}
 
+	function ProcessBotConnected()
+	{
+		$bot = $this;
+		include("functions/code/code_BotConnected.php");
+	}
+
 	function ProcessChanUserListOnJoin($channel, $users)
 	{
+
+		if(substr($channel, 0, 1) == ":")
+			$channel = substr($channel, 1, strlen($channel));
 
 		$channelObj = $this->ChanList->findChannelByName($channel);
 
@@ -326,6 +358,9 @@ class PHPBot {
 	{
 		$bot = $this;
 
+		if(substr($channel, 0, 1) == ":")
+			$channel = substr($channel, 1, strlen($channel));
+
 		if(strtoupper($kicked) == strtoupper($this->botConfig->NICKNAME))
 		{
 			// me!
@@ -372,6 +407,9 @@ class PHPBot {
 
 	function ProcessTopicChange($channel, $topic=null, $setby=null, $settime=null)
 	{
+		if(substr($channel, 0, 1) == ":")
+			$channel = substr($channel, 1, strlen($channel));
+
 		$channelObj = $this->ChanList->findChannelByName($channel);
 
 		if($channelObj == null)
@@ -391,6 +429,9 @@ class PHPBot {
 	{
 		$bot = $this;
 
+		if(substr($channel, 0, 1) == ":")
+			$channel = substr($channel, 1, strlen($channel));
+
 		if(strtoupper($from_nick) == strtoupper($this->botConfig->NICKNAME))
 		{
 			// me!
@@ -408,6 +449,9 @@ class PHPBot {
 	{
 		$bot = $this;
 
+		if(substr($channel, 0, 1) == ":")
+			$channel = substr($channel, 1, strlen($channel));
+
 		if(strtoupper($from_nick) == strtoupper($this->botConfig->NICKNAME))
 		{
 			// me!
@@ -423,9 +467,34 @@ class PHPBot {
 	function ProcessPrivateMessage($from_nick, $from_userid, $from_host, $command, $data)
 	{
 
+		//Processing Private Message: from anthonym, command=PING, data=:anthonym!anthonym@irc-9FA3E7D1.sbr800.nsw.optusnet.com.au PRIVMSG PHPBot :PING 1382979811
+		//echo("Processing Private Message: from $from_nick, command=$command, data=$data\r\n");
+
 		if(strtoupper($command) == "RELOAD")
 		{
 			$this->DoReload($from_nick);
+		}
+
+		if(substr(strtoupper($command), 0, 1) == chr(1))
+		{
+			$ctcp_string = strtoupper(substr($command, 1, strlen($command)-1));
+			$ctcp_sparts = explode(" ", $ctcp_string);
+
+			$ctcp_function = $ctcp_sparts[0];
+
+			if(substr($ctcp_function, strlen($ctcp_function)-1, 1) == chr(1))
+				$ctcp_function = substr($ctcp_function, 0, strlen($ctcp_function)-1);
+
+			if(file_exists('functions/ctcp/'.strtolower($ctcp_function).".php"))
+			{
+				$bot = $this;
+				include('functions/ctcp/'.strtolower($ctcp_function).".php");
+				return;
+			}
+
+			$this->socketHandler->send($this->ircHandler->PRIVMSG($this->botConfig->DebugChannel, "$from_nick tried to use CTCP command |$ctcp_function|, however that CTCP command is unknown to me."));
+			return;
+
 		}
 
 		if($this->functionHandler != null)
@@ -435,7 +504,7 @@ class PHPBot {
 
 			if($aFunction == null)
 			{
-				$this->socketHandler->send($this->ircHandler->PRIVMSG("#phpbottest", "$from_nick tried to use command $command, however that command is unknown to me."));
+				$this->socketHandler->send($this->ircHandler->PRIVMSG($this->botConfig->DebugChannel, "$from_nick tried to use command $command, however that command is unknown to me."));
 				return;
 			}
 
@@ -450,12 +519,34 @@ class PHPBot {
 
 	function ProcessChannelMessage($from_nick, $from_userid, $from_host, $command, $data)
 	{
-		//$this->socketHandler->send($this->ircHandler->PRIVMSG("#phpbottest", "$from_nick ($from_userid@$from_host) tried to use command: $command, and said $data"));
+		//$this->socketHandler->send($this->ircHandler->PRIVMSG($this->botConfig->DebugChannel, "$from_nick ($from_userid@$from_host) tried to use command: $command, and said $data"));
 
 		if(strtoupper($command) == ".RELOAD")
 		{
 			$this->DoReload($from_nick);
 			return;
+		}
+
+		if(substr(strtoupper($command), 0, 1) == chr(1))
+		{
+			$ctcp_string = strtoupper(substr($command, 1, strlen($command)-1));
+			$ctcp_sparts = explode(" ", $ctcp_string);
+
+			$ctcp_function = $ctcp_sparts[0];
+
+			if(substr($ctcp_function, strlen($ctcp_function)-1, 1) == chr(1))
+				$ctcp_function = substr($ctcp_function, 0, strlen($ctcp_function)-1);
+
+			if(file_exists('functions/ctcp/'.strtolower($ctcp_function).".php"))
+			{
+				$bot = $this;
+				include('functions/ctcp/'.strtolower($ctcp_function).".php");
+				return;
+			}
+
+			$this->socketHandler->send($this->ircHandler->PRIVMSG($this->botConfig->DebugChannel, "$from_nick tried to use CTCP command $command, however that CTCP command is unknown to me."));
+			return;
+
 		}
 
 		if(substr(strtoupper($command), 0, 1) != strtoupper($this->botConfig->CHANCOMMANDPREFIX))
@@ -470,7 +561,7 @@ class PHPBot {
 
 			if($aFunction == null)
 			{
-				$this->socketHandler->send($this->ircHandler->PRIVMSG("#phpbottest", "$from_nick tried to use command $command, however that command is unknown to me."));
+				$this->socketHandler->send($this->ircHandler->PRIVMSG($this->botConfig->DebugChannel, "$from_nick tried to use command $command, however that command is unknown to me."));
 				return;
 			}
 
