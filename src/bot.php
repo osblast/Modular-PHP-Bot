@@ -489,6 +489,15 @@ class PHPBot {
 		if(strtoupper($old_nickname) == strtoupper($this->botConfig->NICKNAME))
 		{
 			// me!
+
+			/* First, change the bot's internal known nickname to new_nickname, as
+			   at this stage, the server has already forced the bot's new nickname.
+
+			   BUGFIX:/#1 Bot nickname changing issue/osBlast
+		   */
+
+			$this->botConfig->NICKNAME = $new_nickname;
+
 			$chanlist = $bot->ChanList;
 			$mem_instance_arr = $chanlist->queryUserByNickname($old_nickname);
 
@@ -502,8 +511,6 @@ class PHPBot {
 				if(strtoupper($chan_member->Nickname) == strtoupper($old_nickname))
 					$chan_member->Nickname = $new_nickname;
 			}
-
-			$this->botConfig->NICKNAME = $new_nickname;
 		}
 		else
 		{
