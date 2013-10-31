@@ -6,10 +6,11 @@ class osBlast_DB {
 
 	function osBlast_DB()
 	{
-		//$dbHost = osBlast::getSiteInfo()->getConfig()->Database["Hostname"];
-		//$dbUser = osBlast::getSiteInfo()->getConfig()->Database["Username"];
-		//$dbPass = osBlast::getSiteInfo()->getConfig()->Database["Password"];
-		//$dbName = osBlast::getSiteInfo()->getConfig()->Database["Dbname"];
+
+		$dbHost = "your.db.hostname";
+		$dbUser = "your.db.username";
+		$dbPass = "your.db.password";
+		$dbName = "your.db.databasename";
 
 		if($dbHost == "" || $dbUser == "" || $dbPass == "" || $dbName == "")
 			throw new Exception("Configuration incomplete, no database configuration exists.  Please consult osBlast Configuration Guide");

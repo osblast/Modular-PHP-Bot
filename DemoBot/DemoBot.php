@@ -6,6 +6,7 @@
 	/* include any plugin file(s) that we need */
 	//include_once('src/plugins/BitBucket.php');
 	include_once('src/plugins/DemoPlugin.php');
+	include_once('src/plugins/ChanUserAssist.php');
 
 	class DemoBot extends PHPBot {
 
@@ -19,6 +20,7 @@
 			//$this->PluginList->AddPlugin(new Plugin_BitBucket("BitBucketDemo"));
 			//$this->TimerList->AddTimer(new BotTimer("tmrBitBucketDemo", 1, true, new BotTimerCallback("BitBucketDemo", "Timer_CheckNew_Callback", array("bot" => $this))));
 			$this->PluginList->AddPlugin(new Plugin_DemoPlugin("DemoPlugin"));
+			$this->PluginList->AddPlugin(new Plugin_ChanUserAssist("ChanUserAssist", "#osBlast", "osblastcua", "!+"));
 
 			$this->functionHandler->Reload("DemoBot/functions/");
 		}

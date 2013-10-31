@@ -10,10 +10,8 @@ class osBlast_Loader {
 			$this->parent = $parent;
 	}
 
-	function model($model_name)
+	function model($model_name, $model_path)
 	{
-
-		$model_path = "data/";
 
 		if(!file_exists($model_path.$model_name.".php"))
 		{
@@ -30,14 +28,7 @@ class osBlast_Loader {
 
 		$mdl_name_loaded = strtolower($model_name);
 
-		if($this->parent != null)
-		{
-			$this->parent->$mdl_name_loaded = new $_mdl_name();
-		}
-		else
-		{
-			return(new $_mdl_name());
-		}
+		return(new $_mdl_name());
 	}
 
 	function database()
